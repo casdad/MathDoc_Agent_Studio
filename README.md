@@ -49,9 +49,18 @@ MathDoc Agent Studio 是一个**可以直接运行的双栏网页应用**，不�
 
 ## 界面预览
 
-![MathDoc Studio 双栏界面：左侧输入与 Agent 处理，右侧实时文档与公式预览](screenshots/ui_preview.png)
+以下截图均来自**实际运行**的本机实例。
 
-*左侧为原始输入与 Agent 处理结果，右侧为实时 Markdown/MathML 预览与 DOCX 导出入口。*
+<p align="center">
+  <img src="docs/images/01-workspace.png" alt="MathDoc Studio 实际运行界面：左侧输入与 Agent 结果，右侧实时文档预览" width="880">
+</p>
+
+<p align="center"><em>工作台：左侧为原始输入与 Agent 处理结果，右侧为实时 Markdown / MathML 预览与 DOCX 导出入口。</em></p>
+
+| 首次打开（空状态） | 模型配置 |
+|:---:|:---:|
+| <img src="docs/images/02-empty-state.png" alt="首次打开的空状态" width="430"> | <img src="docs/images/03-model-config.png" alt="模型配置弹窗" width="430"> |
+| 预览占位、处理模式与本地引擎状态 | 配置保存到 `config.json`，可随时清除 |
 
 ## 快速开始
 
@@ -195,8 +204,8 @@ MathDoc_Agent_Studio/
 ├── samples/
 │   ├── demo.md               # 示例输入
 │   └── example_output.docx   # 示例输出
-├── screenshots/
-│   └── ui_preview.png        # 界面截图
+├── docs/
+│   └── images/               # 实际运行截图：工作台 / 空状态 / 配置弹窗
 ├── create_template.py        # 重新生成 Word 样式模板
 ├── mathdoc_cli.py            # 命令行转换 / 审计
 ├── QA_验证报告.md             # 测试范围与未验证项
