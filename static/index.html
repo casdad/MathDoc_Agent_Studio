@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>MathDoc Studio · AI 学术文档转换工作台</title>
+<link rel="stylesheet" href="/static/styles.css?v=2"/>
+</head><body>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">∑</div><div><strong>MathDoc <span>Studio</span></strong><small>Agent · Markdown · Word</small></div></div>
+    <div class="header-right"><span class="status-pill" id="backend-pill"><span class="status-dot"></span> 正在检测转换引擎</span>
+      <button class="btn ghost" id="sample-btn" title="加载包含公式的示例">加载示例</button>
+      <button class="btn settings-btn" id="settings-open">⚙ 配置模型 <span id="model-name" class="model-short">未配置</span></button>
+    </div>
+  </header>
+  <main class="workspace">
+    <section class="left-pane">
+      <div class="panel-header"><div><div class="eyebrow">01 / INPUT & AGENT</div><h1>输入与 Agent 处理</h1><p>粘贴任意 Markdown / LaTeX 文本，使用 AI 整理或直接转换。</p></div><span class="soft-tag">源文件始终保留</span></div>
+      <div class="left-content">
+        <div class="section-title"><div><span class="step-circle">A</span><strong>原始输入</strong><span class="subtle">粘贴论文、回答或公式内容</span></div><button class="tiny-btn" id="clear-btn">清空</button></div>
+        <textarea id="source" class="editor source-editor" spellcheck="false" placeholder="在这里粘贴大模型输出内容……\n\n示例：\n## 方法\n我们的损失定义为 $L = L_{task} + \\lambda L_{reg}$。\n\n$$\\mathcal{L}=\\sum_{i=1}^n (y_i-\\hat y_i)^2$$"></textarea>
+        <div class="editor-meta"><span id="source-stat">0 字符</span><span>支持 $...$、$$...$$ 与 \(...\)</span></div>
+        <div class="agent-toolbar">
+          <div class="mode-field"><label for="agent-mode">处理模式</label><select id="agent-mode"><option value="preserve">严格保真 · 仅调整格式</option><option value="polish">轻度润色 · 保持公式语义</option></select></div>
+          <button class="btn outline" id="direct-btn">直接排版 <span class="kbd">↘</span></button>
+          <button class="btn primary" id="agent-btn">✦ Agent 智能处理</button>
+        </div>
+        <div class="section-title output-section"><div><span class="step-circle">B</span><strong>处理结果 · Markdown</strong><span class="subtle">可继续编辑，右侧实时更新</span></div><button class="tiny-btn" id="copy-md-btn">复制源码</button></div>
+        <textarea id="processed" class="editor processed-editor" spellcheck="false" placeholder="点击「直接排版」或「Agent 智能处理」，处理结果会出现在这里。"></textarea>
+        <div class="editor-meta"><span id="processed-stat">0 字符</span><span id="agent-message">准备就绪</span></div>
+      </div>
+    </section>
+    <section class="right-pane">
+      <div class="panel-header right-heading"><div><div class="eyebrow">02 / LIVE DOCUMENT</div><h1>可格式化文档</h1><p>预览、复制富文本，或导出 Word 原生数学公式。</p></div><span class="soft-tag accent">实时预览</span></div>
+      <div class="right-actions">
+        <div class="format-wrap"><label for="formula-format">公式输出 / 复制模式</label><select id="formula-format"><option value="omml">OMML · Word 原生（推荐）</option><option value="mathtype">MathType · LaTeX 交换</option><option value="mathml">MathML · 标记交换</option></select></div>
+        <button class="btn outline" id="copy-rich-btn">▣ 复制富文本</button>
+        <button class="btn primary" id="export-btn">⇩ 导出 DOCX</button>
+      </div>
+      <div class="format-note" id="format-note"><span class="note-icon">ⓘ</span><span>OMML 是 DOCX 内部的原生数学格式。浏览器“复制富文本”可保留大部分文字样式，但不能保证 Word 将每条公式识别为原生对象；需要可靠可编辑公式请用「导出 DOCX」。</span></div>
+      <div class="preview-shell">
+        <div class="document-toolbar"><span><span class="doc-dot"></span> DOCUMENT PREVIEW</span><div class="toolbar-right"><span id="math-count">0 条公式</span><span class="divider-line"></span><span id="preview-state">未渲染</span></div></div>
+        <article id="preview" class="document-preview"><div class="preview-placeholder"><span class="placeholder-icon">ƒ(x)</span><h2>你的文档将在这里呈现</h2><p>左侧输入内容后，点击直接排版或 Agent 智能处理。</p><div class="example-math">\( \mathcal{L} = \sum_{i=1}^{n} \ell_i \)</div></div></article>
+      </div>
+      <div class="formula-row"><div><span class="label-muted">单条公式</span><select id="formula-item"><option value="">尚无公式</option></select></div><button class="btn outline small" id="copy-formula-btn">复制所选公式</button></div>
+      <div class="footer-status"><div class="status-message" id="status-message"><span class="status-dot"></span> 本地转换就绪</div><button id="show-warnings" class="tiny-btn">验证信息 <span id="warning-count">0</span></button></div>
+      <pre class="warnings-box hidden" id="warnings-box"></pre>
+    </section>
+  </main>
+  <footer class="app-footer"><span>MathDoc Studio · Local-first 文档工作台</span><span>复制使用浏览器 HTML 剪贴板；DOCX 使用 Pandoc → OMML</span></footer>
+</div>
+<div class="modal hidden" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+  <div class="modal-backdrop" id="settings-backdrop"></div><div class="modal-dialog">
+    <div class="modal-header"><div><div class="eyebrow">MODEL CONNECTION</div><h2 id="settings-title">配置 AI Agent</h2><p>兼容 OpenAI Chat Completions API 的模型服务</p></div><button class="icon-btn" id="settings-close" aria-label="关闭">×</button></div>
+    <div class="modal-body">
+      <label for="provider">服务商</label><select id="provider"><option value="openai">OpenAI API</option><option value="deepseek">DeepSeek API</option><option value="local">本地模型 / Ollama / LM Studio</option><option value="custom">自定义兼容接口</option></select>
+      <label for="api-base">API Base URL</label><input id="api-base" type="url" spellcheck="false" value="https://api.openai.com/v1"/>
+      <label for="api-model">模型 ID</label><div class="model-input"><input id="api-model" type="text" spellcheck="false" value="gpt-4.1-mini" placeholder="例如 gpt-4.1-mini 或 deepseek-chat"/><button class="btn outline small" id="list-models">查询</button></div>
+      <select id="available-models" class="hidden"><option>请选择模型</option></select>
+      <label for="api-key">API Key <span class="optional">本地模型可留空</span></label><div class="key-input"><input id="api-key" type="password" placeholder="sk-..." autocomplete="off"/><button id="toggle-key" class="show-key" type="button">显示</button></div>
+      <div class="key-status" id="key-status">尚未保存配置</div>
+      <div class="security-hint">🔒 点击「保存设置」会把服务商、API 地址、模型 ID 和密钥以明文写入项目目录的 <code>config.json</code>，仅限本机使用；请勿分享该文件。API Key 不会回传到页面。ChatGPT 网页订阅不等于 API 额度。</div>
+      <label for="custom-instruction">补充 Agent 指令 <span class="optional">可选</span></label><textarea id="custom-instruction" rows="3" placeholder="例如：保留全部原始公式编号，按照 SCI 论文中文章节格式整理。"></textarea>
+    </div>
+    <div class="modal-footer"><button class="btn danger" id="settings-clear">清除已保存配置</button><button class="btn outline" id="settings-cancel">取消</button><button class="btn primary" id="settings-save">保存设置</button></div>
+  </div>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="/static/app.js?v=3" defer></script>
+</body></html>

@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environment, recreated by start_windows.bat
+.venv/
+
+# Local API config: contains a plaintext key
+config.json
+
+# Temporary pip / pytest directories
+pip-build-tracker-*/
+pip-ephem-wheel-cache-*/
+pip-install-*/
+pytest-of-*/
+
+# Local conversion output
+output.docx
+
+# OS metadata
+Thumbs.db
+desktop.ini
+.DS_Store
